@@ -1,5 +1,10 @@
 import requests
 import json
+import zipfile
+import re
+import os
+import geopandas as gpd
+import unicodedata
 
 
 def get_variable_id(subject_id):
@@ -35,7 +40,7 @@ def get_variable_data(variable_id, years_list, region_level='2'):
         for item in new_data:
             tmp = {'name': item['attributes']['name']}
             for value in item['attributes']['values']:
-                tmp[f"{value['year']}"] = value['val']
+                tmp[f'{value['year']}'] = value['val']
             result.append(tmp)
     return result
 
@@ -43,4 +48,17 @@ def get_variable_data(variable_id, years_list, region_level='2'):
 def print_list(_list):
     for item in _list:
         print(item)
-    print("\n")
+    print('\n')
+
+
+def read_zipfile(zip_filename, entry_name):
+    with zipfile.ZipFile(zip_filename, mode='r') as zip_file:
+        dbf_name = list(filter(lambda x: re.match(entry_name + r'.*\.dbf$', os.path.basename(x)),
+                               zip_file.namelist()))[0]
+        return gpd.read_file(f'zip://{zip_filename}!/{dbf_name}', encoding='utf-8')
+
+
+def normalize_text(_text):
+    normalized_text = unicodedata.normalize('NFC', _text)
+    result = ''.join(c for c in normalized_text if not unicodedata.combining(c))
+    return result

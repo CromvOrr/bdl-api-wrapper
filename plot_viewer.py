@@ -24,7 +24,7 @@ def run(_df, years_list):
 
         global plot_selector
         plot_selector = ttk.Combobox(root, textvariable=plot_selector_value, values=list(map(str, years_list)),
-                                     state="readonly")
+                                     state='readonly')
         plot_selector.set(years_list[0])
         plot_selector.grid(row=0, column=0)
 
@@ -42,9 +42,15 @@ def run(_df, years_list):
         print('ERROR 100')
 
     try:
-        for i in years_list:
-            img_path = f'plot_{i}.png'
+        for year in years_list:
+            img_path = f'plot_{year}.png'
             if os.path.exists(img_path):
                 os.remove(img_path)
     except TypeError:
         print('ERROR 200')
+
+    try:
+        if os.path.exists('wojewodztwa.zip'):
+            os.remove('wojewodztwa.zip')
+    except TypeError:
+        print('ERROR 300')
